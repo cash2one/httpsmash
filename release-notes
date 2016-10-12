@@ -1,0 +1,34 @@
+###################################################################
+## DATE: 2011-01-20
+## FILE: release-notes
+## LICENSE: BSD http://www.opensource.org/licenses/bsd-license.php
+###################################################################
+
+Change List
+1.1.5 - current version that is ready for general use. 
+
+Features
+1. Single Server / Multi-Client job processing to emulate multiuser environment 
+2. Queue based job management 
+3. Encrypted communication (sha256(salted) + hexify + base64) via key exchange
+4. Support for configurable randomized query string urls
+5. Multithreaded operation on server and client 
+6. Config file driven for server and client
+7. Performance data reporting for url connection timing
+8. Settings for #threads, #repeat, #wait to control total hit quantity across nodes
+
+To Do
+1. add job priority to the queue
+2. allow app to speak HTTP / REST instead of bare socket language
+3. robustify (!) the key management scripts
+4. create web-admin interface for queue management, general settings, node management
+5. create reporting functions
+6. create RPMs for scripts so distribution is easier
+7. allow for daemonization of scripts
+8. audit & improve exception handling
+9. write documentation
+10. improve certificate / encryption functions
+11. allow for user agent configuration
+12. generate configurable output data for url response time graphing
+13. integrate "total hits" logic so we know that (#nodes(threads * repeat)) values doesn't hit the URL with more/less traffic than user wants. manual calculation currently. 
+14. move queue management from flat text file to MongoDB (some code already in the works), which will fix the issue with "empty queue, process running" and not being able to tell the app to re-read the flat file without a HUP which could screw up nodes that are actively working on an existing job and haven't reported back yet.

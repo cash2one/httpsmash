@@ -1,0 +1,144 @@
+HTTPsmash - a distributed load testing system for web infrastructures
+================================================================================
+Author: Madeline Everett
+License: BSD http://www.opensource.org/licenses/bsd-license.php
+
+
+High Level Feature List
+================================================================================
+1. Highly scalable HTTP load generation application for simulating high traffic
+2. Allows geographically distributed nodes to simulate global user-base traffic
+2. Enhanced job management via inter-process queue system
+3. Encrypted node communication via direct SOCKET protocol w/ key exchange
+4. Optional randomized query string url generation - simulate dynamic calls
+5. Multi-threaded operation on server and client 
+6. Config file support for server and client
+7. Performance data reporting for url connection timing
+8. Configurable options for controling total hit quantity across nodes
+   - per-node thread concurrency
+   - per-thread connect cycling
+   - per-connection delay timing
+   - optional randomized connection timing
+
+
+Topic List
+================================================================================
++ Scaling Your Load Test Cluster
++ Hardware and Software Requirements
++ Components for Reference
++ HTTP Smash Server
++ HTTP Smash Client
++ Scaling Your Load Test Cluster
++ Application Support
+
+
+Hardware and Software Requirements
+================================================================================
+
+Software
+----------------------------------------
+Python >=2.6
+  modules: socket, stat, binascii, base64, ConfigParser, commands, threading, 
+  os, sys, urllib2, select, random, string, getopt, time, logging, queue, 
+  thread, fileinput, zlib
+
+Operating Systems (only 64bit tested, probably fine on 32bit)
+----------------------------------------
+Ubuntu: Ubuntu 10.10+ 
+Redhat flavors: 5.5 -> 6.3, Fedora 14+
+UNIX: openBSD 4.8+, FreeBSD 8.1+
+Mac OSX: 10.5 -> 10.9
+Windows: not tested, if you get it to work then that's great
+
+Hardware Requirements
+----------------------------------------
+See 'scaling' section below. Dedicated hardware will give the best performance.
+
+Network Requirements
+----------------------------------------
+Basic TCP/IP required
+Multicast not required
+Firewall needs to allow access between the clients and server but client nodes do not need to be able to talk to one another
+Default Manager Port: port 8080
+If you have TCP Offload support on your network cards you should enable it for better performance of network saturation
+
+
+Components for Reference
+================================================================================
+1. Server (workload manager and task delegation)
+  - configuration file
+  - workload definition file
+  - encryption key management
+  - encryption engine
+  - workload queue manager
+  - threading manager
+  - TCP connection socket engine
+
+2. Client (task execution)
+  - configuration file
+  - encryption key management
+  - encryption engine
+  - task queue manager
+  - threading manager
+  - task request engine - pull style
+
+HTTP Smash Server
+================================================================================
+
+Configuration
+----------------------------------------
+The server is very simple. You configure it via two files.
+"server/conf/server.conf" - this contains variables that are documented in the conf file
+"server/conf/urlfile" - this file is where you put your URLs to test.
+
+Each line in the "urlfile" is equivallent one job. The options are required to be in order, separated by blank spaces. If you do not separate them properly, or leave out a value for a setting then the server will fail to start and will let you know as such.
+
+When creating your jobs please consider the following equations to determine how much load you are going to be hitting your url with. We operate with the following equations for traffic planning:
+  * connections per-second = (client-threads * client-perthread) / (client-perthread * wait)
+  * connections total = (client-threads * client-perthread) * repeat
+
+Job Entry Values
+----------------------------------------
+ clients = number of clients you want running the jobs (dependent on the # of active job nodes reading the queue)
+ url = url to test
+ wait = time period to wait between each url request
+ repeat = quantity of times to repeat requests per thread
+ suffix = optional query string or url value to append to url (required if using random query strings)
+ rand = random query string length
+ rand_enable = enable randomized query string if desired, requires >1 for RAND value
+ suffix_enable = enable optional query string, requires "RAND_ENABLE = 1"
+ client-threads = number of threads the client should open per job (each thread will open $PERTHREAD connections)
+ client-perthread = number of connections to the destination per THREAD
+
+Job Example
+----------------------------------------
+  clients url wait repeat suffix rand rand_enable suffix_enable client-threads client-perthread
+  example:
+  2 http://url.com 1 4 /string= 8 0 0 2 4
+
+
+HTTP Smash Client
+================================================================================
+The client is simple as well. You configure it via the file "client/conf/client.conf"
+- Run it and it will connect to the manager and process jobs from the queue in a FIFO manner. 
+- Tail the log to see extra info while running
+
+
+Scaling Your Load Test Cluster
+================================================================================
+ - You may need to run multiple nodes (or multiple per-node instances of the client) to process very large workloads in a short period of time. 
+ - Connection concurrency for the tests are limited to the number of threads that your server(s) can concurrently support. 
+ - A standard server grade processor (Xeon / Opteron) at the time of this writing operates with between 2-6 threads per core with 1-4 socket CPUs being the most common commodity hardware. 
+ - The more threads your CPU supports more task execution threads you can run = more concurrent load tests able to be run. 
+ - To saturate a 1000Mbit (gigabit) ethernet connection you need very high concurrency of executing threads; generally well over 500 connections per second per node. YMMV. 
+ - If you have TCP Offload support on your network cards you should enable it for better performance of network saturation, since the NIC's ASIC will process TCP instead of the CPU
+ - Moore's law exists - please apply this to your scaling plans.
+
+
+Application Support
+================================================================================
+Look at the debug log for errors or troubleshooting information prior to contacting the author or digging into the code.
+Professional support is available on a consulting basis
+
+
+

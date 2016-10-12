@@ -1,0 +1,23 @@
+# DATE: 2011-02-01
+# FILE: urlfile
+# LICENSE: BSD http://www.opensource.org/licenses/bsd-license.php
+# #################################################################
+# Use the following format for adding a job to the queue. 
+# Each value must be present and separated by spaces. No line can be left blank.
+# How to figure out the number of total connections and connections per second:
+# connections persecond = (client-threads * client-perthread) / (client-perthread * wait)
+# connections total = (client-threads * client-perthread) * repeat
+# -----------------------------------------------------------------
+# clients url wait repeat suffix rand rand_enable suffix_enable client-threads client-perthread
+# example:
+# 2 http://url.com 1 4 /string= 8 0 0 2 4
+# -----------------------------------------------------------------
+#1 http://192.168.0.40/munin/index.html 1 2 /null 8 0 0 2 4
+#1 http://192.168.0.40/index.html 1 2 /null 8 0 0 2 4
+50 http://foo.bar.site.com 1 128 / 0 0 0 2 2
+50 http://foo.bar.site.com/explore 1 128 / 0 0 0 2 2
+50 http://foo.bar.site.com/faq 1 128 / 0 0 0 2 2
+50 http://foo.bar.site.com/market-place 1 128 / 0 0 0 2 2
+50 http://foo.bar.site.com/user/register 1 128 / 0 0 0 2 2
+50 http://foo.bar.site.com/signup/4 1 128 / 0 0 0 2 2
+50 http://foo.bar.site.com/dashboard 1 128 / 0 0 0 2 2
